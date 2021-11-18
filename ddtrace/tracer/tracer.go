@@ -8,6 +8,7 @@ package tracer
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"sync"
 	"time"
@@ -129,6 +130,9 @@ type Span = ddtrace.Span
 // StartSpan starts a new span with the given operation name and set of options.
 // If the tracer is not started, calling this function is a no-op.
 func StartSpan(operationName string, opts ...StartSpanOption) Span {
+	if _, file, line, ok := runtime.Caller(1); ok {
+		opts = append(opts, setFileLine(file, line))
+	}
 	return internal.GetGlobalTracer().StartSpan(operationName, opts...)
 }
 

@@ -699,6 +699,20 @@ func AnalyticsRate(rate float64) StartSpanOption {
 	return Tag(ext.EventSampleRate, rate)
 }
 
+// setFileLine sets the file and line tags.
+func setFileLine(file string, line int) StartSpanOption {
+	return func(cfg *ddtrace.StartSpanConfig) {
+		if cfg.Tags == nil {
+			cfg.Tags = map[string]interface{}{}
+		}
+		if _, ok := cfg.Tags["_dd.span.file"]; ok {
+			return
+		}
+		cfg.Tags["_dd.span.file"] = file
+		cfg.Tags["_dd.span.line"] = strconv.Itoa(line)
+	}
+}
+
 // FinishOption is a configuration option for FinishSpan. It is aliased in order
 // to help godoc group all the functions returning it together. It is considered
 // more correct to refer to it as the type as the origin, ddtrace.FinishOption.

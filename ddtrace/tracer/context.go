@@ -7,6 +7,7 @@ package tracer
 
 import (
 	"context"
+	"runtime"
 
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/internal"
@@ -45,6 +46,9 @@ func StartSpanFromContext(ctx context.Context, operationName string, opts ...Sta
 	}
 	if s, ok := SpanFromContext(ctx); ok {
 		opts = append(opts, ChildOf(s.Context()))
+	}
+	if _, file, line, ok := runtime.Caller(1); ok {
+		opts = append(opts, setFileLine(file, line))
 	}
 	s := StartSpan(operationName, opts...)
 	return s, ContextWithSpan(ctx, s)
