@@ -7,6 +7,7 @@ package tracer
 
 import (
 	"fmt"
+	stdlog "log"
 	"os"
 	"strconv"
 	"sync"
@@ -134,10 +135,10 @@ func StartSpan(operationName string, opts ...StartSpanOption) Span {
 	// }
 	globalSpansLocationsLock.RLock()
 	if loc, ok := globalSpansLocations[operationName]; ok {
-		log.Printf("found location for %s at %s:%d", operationName, loc.File, loc.Line)
+		stdlog.Printf("found location for %s at %s:%d", operationName, loc.File, loc.Line)
 		opts = append(opts, setFileLine(loc.File, loc.Line))
 	} else {
-		log.Printf("did not find location for %s", operationName)
+		stdlog.Printf("did not find location for %s", operationName)
 	}
 	globalSpansLocationsLock.RUnlock()
 	return internal.GetGlobalTracer().StartSpan(operationName, opts...)

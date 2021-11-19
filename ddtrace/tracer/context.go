@@ -7,10 +7,10 @@ package tracer
 
 import (
 	"context"
+	stdlog "log"
 
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/internal"
-	"gopkg.in/DataDog/dd-trace-go.v1/internal/log"
 )
 
 type contextKey struct{}
@@ -52,10 +52,10 @@ func StartSpanFromContext(ctx context.Context, operationName string, opts ...Sta
 	// }
 	globalSpansLocationsLock.RLock()
 	if loc, ok := globalSpansLocations[operationName]; ok {
-		log.Printf("found location for %s at %s:%d", operationName, loc.File, loc.Line)
+		stdlog.Printf("found location for %s at %s:%d", operationName, loc.File, loc.Line)
 		opts = append(opts, setFileLine(loc.File, loc.Line))
 	} else {
-		log.Printf("did not find location for %s", operationName)
+		stdlog.Printf("did not find location for %s", operationName)
 	}
 	globalSpansLocationsLock.RUnlock()
 	s := StartSpan(operationName, opts...)
