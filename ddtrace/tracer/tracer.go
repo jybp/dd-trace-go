@@ -163,7 +163,7 @@ func RegisterSpansLocations(locs ...SpanLoc) {
 	globalSpansLocationsLock.Lock()
 	defer globalSpansLocationsLock.Unlock()
 	for _, loc := range locs {
-		log.Printf("RegisterSpansLocations %s at %s:%d", loc.name, loc.File, loc.Line)
+		stdlog.Printf("RegisterSpansLocations %s at %s:%d", loc.Name, loc.File, loc.Line)
 		globalSpansLocations[loc.Name] = spanLoc{loc.File, loc.Line}
 	}
 }
