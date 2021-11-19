@@ -152,8 +152,8 @@ type spanLoc struct {
 }
 
 var (
-	globalSpansLocations map[string]loc
-	globalSpansLocationsLock sync.RWMutex{}
+	globalSpansLocations = map[string]loc{}{}
+	globalSpansLocationsLock = sync.RWMutex{}
 )
 
 func RegisterSpansLocations(locs ...SpanLoc) {
