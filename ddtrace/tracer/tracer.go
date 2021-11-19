@@ -8,7 +8,6 @@ package tracer
 import (
 	"fmt"
 	"os"
-	"runtime"
 	"strconv"
 	"sync"
 	"time"
@@ -148,11 +147,11 @@ type SpanLoc struct {
 
 type spanLoc struct {
 	File string
-	Line       int
+	Line int
 }
 
 var (
-	globalSpansLocations = map[string]loc{}{}
+	globalSpansLocations     = map[string]spanLoc{}
 	globalSpansLocationsLock = sync.RWMutex{}
 )
 
