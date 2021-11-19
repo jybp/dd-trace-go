@@ -130,10 +130,38 @@ type Span = ddtrace.Span
 // StartSpan starts a new span with the given operation name and set of options.
 // If the tracer is not started, calling this function is a no-op.
 func StartSpan(operationName string, opts ...StartSpanOption) Span {
-	if _, file, line, ok := runtime.Caller(1); ok {
-		opts = append(opts, setFileLine(file, line))
+	// if _, file, line, ok := runtime.Caller(1); ok {
+	// 	opts = append(opts, setFileLine(file, line))
+	// }
+	globalSpansLocationsLock.RLock()
+	if loc, ok := globalSpansLocations[operationName]; ok {
+		opts = append(opts, setFileLine(loc.File, loc.Line))
 	}
+	globalSpansLocationsLock.RUnlock()
 	return internal.GetGlobalTracer().StartSpan(operationName, opts...)
+}
+
+type SpanLoc struct {
+	Name, File string
+	Line       int
+}
+
+type spanLoc struct {
+	File string
+	Line       int
+}
+
+var (
+	globalSpansLocations map[string]loc
+	globalSpansLocationsLock sync.RWMutex{}
+)
+
+func RegisterSpansLocations(locs ...SpanLoc) {
+	globalSpansLocationsLock.Lock()
+	defer globalSpansLocationsLock.Unlock()
+	for _, loc := range locs {
+		globalSpansLocations[loc.Name] = spanLoc{loc.File, loc.Line}
+	}
 }
 
 // Extract extracts a SpanContext from the carrier. The carrier is expected
